@@ -10,6 +10,37 @@ from tensorflow.keras import layers
 
 DATADIR = Path("/project/dfreedman/colmt/UChicago-AI-in-Science-Hackathon/stellar-paleontology-data/")
 
+def load_classification_data_sample(datadir=DATADIR, fraction=1.0, metallicity="all"):
+    """
+    Load the data from the prepared pickle file and optionally sample a fraction of it.
+
+    Parameters:
+    - datadir: Path to the directory containing the pickle file.
+    - fraction: Fraction of the data to load (default is 1.0, i.e., all data).
+    - metallicity: Filter by metallicity if required, currently implemented as "all".
+
+    Returns:
+    - DataFrame with the requested fraction of data.
+
+    Notes:
+    - `ZAMS` (zero-age main sequence) marks when the stars form. Any quantities defined at this time are inputs to the simulation.
+    - The kick refers to momentum that is lost during supernova explosions, technically occurring later in the simulation but chosen based on some prescription.
+
+    We also retain our target, `Merges_Hubble_Time`.
+    """
+    ignore = ["Mass(1)", "Mass(2)", "Eccentricity@DCO", "SemiMajorAxis@DCO", "Coalescence_Time"]
+
+    # Load the full dataset from a pickle file
+    double_compact_objects = pd.read_pickle(datadir / "compas-data.pkl")
+
+    # Remove specified columns from the dataset
+    double_compact_objects = double_compact_objects.drop(columns=[key for key in ignore if key in double_compact_objects.columns], errors='ignore')
+
+    # Sample the requested fraction of the data
+    if fraction < 1.0:
+        double_compact_objects = double_compact_objects.sample(frac=fraction, random_state=42)  # random_state for reproducibility
+
+    return double_compact_objects
 
 def load_classification_data(datadir=DATADIR, metallicity="all"):
     """
@@ -32,7 +63,7 @@ def load_classification_data(datadir=DATADIR, metallicity="all"):
             del double_compact_objects[key]
     return double_compact_objects
 
-stars = load_classification_data()
+stars = load_classification_data(fraction=0.1)
 
 X = stars.copy()
 y = X.pop('Merges_Hubble_Time')
@@ -96,7 +127,7 @@ history = model.fit(
 history_df = pd.DataFrame(history.history)
 history_df.loc[:, ['loss', 'val_loss']].plot(title="Cross-entropy")
 history_df.loc[:, ['binary_accuracy', 'val_binary_accuracy']].plot(title="Accuracy")
-
+'''
 def prepare_and_predict(test_data_path):
     test_data = pickle.load(open(test_data_path, 'rb'))
     X_new = test_data.copy()
@@ -117,3 +148,4 @@ def prepare_and_predict(test_data_path):
 test_data_path = 'path_to_new_data.pickle'
 interpreted_predictions = prepare_and_predict(test_data_path)
 print(interpreted_predictions)
+'''
