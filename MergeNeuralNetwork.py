@@ -8,6 +8,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.compose import make_column_transformer
 from tensorflow import keras
 from tensorflow.keras import layers
+from sklearn.metrics import confusion_matrix
 from pathlib import Path
 
 DATADIR = Path("/project/dfreedman/colmt/UChicago-AI-in-Science-Hackathon/stellar-paleontology-data/")
@@ -64,6 +65,38 @@ def load_classification_data(datadir=DATADIR, metallicity="all"):
         if key in double_compact_objects:
             del double_compact_objects[key]
     return double_compact_objects
+
+def statistics(confusion: np.ndarray, verbose=True) -> float:
+    """
+    Compute summary statistics based on the confusion matrix.
+    For more details see https://en.wikipedia.org/wiki/Confusion_matrix.
+    As we are interested in both reducing false positives and negatives, quantitative
+    evaluation of the model will be based on the balanced accuracy.
+    
+    Parameters
+    ==========
+    confusion: np.ndarray
+        The two-by-two confusion matrix of predicted class vs actual class
+        
+    Returns
+    =======
+    balanced_accuracy: float
+        The balanced accuracy of the predictions
+    """
+    confusion = confusion / confusion.sum(axis=0)
+    true_positive_rate = confusion[1, 1]
+    true_negative_rate = confusion[0, 0]
+    false_positive_rate = confusion[1, 0]
+    false_negative_rate = confusion[0, 1]
+    balanced_accuracy = (true_positive_rate + true_negative_rate) / 2
+    if verbose:
+        print(f"True positive rate: {true_positive_rate:.4f}")
+        print(f"False positive rate: {false_positive_rate:.4f}")
+        print(f"True negative rate: {true_negative_rate:.4f}")
+        print(f"False negative rate: {false_negative_rate:.4f}")
+        print(f"Balanced accuracy: {balanced_accuracy:.4f}")
+    return balanced_accuracy
+
 
 stars = load_classification_data_sample(fraction=1)
 
