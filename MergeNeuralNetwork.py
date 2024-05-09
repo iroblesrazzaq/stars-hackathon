@@ -9,11 +9,16 @@ from sklearn.pipeline import make_pipeline
 from sklearn.compose import make_column_transformer
 from tensorflow import keras
 from tensorflow.keras import layers
+from tensorflow.keras.activations import swish
 from sklearn.metrics import confusion_matrix
 from pathlib import Path
 import numpy as np
+import sys
 
-DATADIR = Path("/project/dfreedman/colmt/UChicago-AI-in-Science-Hackathon/stellar-paleontology-data/")
+if len(sys.argv) > 1:
+    DATADIR = Path(sys.argv[1])
+else:
+    DATADIR = Path("/project/dfreedman/colmt/UChicago-AI-in-Science-Hackathon/stellar-paleontology-data/")
 
 def load_classification_data_sample(datadir=DATADIR, fraction=1.0, metallicity="all"):
     """
@@ -134,13 +139,13 @@ input_shape = [X_train.shape[1]]
 
 model = keras.Sequential([
     layers.BatchNormalization(input_shape=input_shape),
-    layers.Dense(256,activation = 'relu'),
+    layers.Dense(256,activation='relu'),
     layers.BatchNormalization(),
     layers.Dropout(0.3),
     layers.Dense(256, activation='relu'),
     layers.BatchNormalization(),
     layers.Dropout(0.3),
-    layers.Dense(256, activation='relu'),
+    layers.Dense(128, activation='relu'),
     layers.BatchNormalization(),
     layers.Dropout(0.3),
     layers.Dense(1,activation = 'sigmoid'),
