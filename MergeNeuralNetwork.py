@@ -65,7 +65,7 @@ def load_classification_data(datadir=DATADIR, metallicity="all"):
             del double_compact_objects[key]
     return double_compact_objects
 
-stars = load_classification_data_sample(fraction=0.5)
+stars = load_classification_data_sample(fraction=1)
 
 X = stars.copy()
 y = X.pop('Merges_Hubble_Time')
