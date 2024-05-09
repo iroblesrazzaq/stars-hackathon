@@ -11,6 +11,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from sklearn.metrics import confusion_matrix
 from pathlib import Path
+import numpy as np
 
 DATADIR = Path("/project/dfreedman/colmt/UChicago-AI-in-Science-Hackathon/stellar-paleontology-data/")
 
