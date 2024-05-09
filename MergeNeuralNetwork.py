@@ -7,6 +7,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.compose import make_column_transformer
 from tensorflow import keras
 from tensorflow.keras import layers
+from pathlib import Path
 
 DATADIR = Path("/project/dfreedman/colmt/UChicago-AI-in-Science-Hackathon/stellar-paleontology-data/")
 
@@ -63,7 +64,7 @@ def load_classification_data(datadir=DATADIR, metallicity="all"):
             del double_compact_objects[key]
     return double_compact_objects
 
-stars = load_classification_data(fraction=0.1)
+stars = load_classification_data_sample(fraction=0.1)
 
 X = stars.copy()
 y = X.pop('Merges_Hubble_Time')
@@ -123,6 +124,8 @@ history = model.fit(
     epochs=150,
     callbacks=[early_stopping],
 )
+test_results = model.evaluate(X_valid, y_test)
+print(f"Test Loss: {test_results[0]}, Test Accuracy: {test_results[1]}")
 
 history_df = pd.DataFrame(history.history)
 history_df.loc[:, ['loss', 'val_loss']].plot(title="Cross-entropy")
