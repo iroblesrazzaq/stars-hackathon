@@ -65,7 +65,7 @@ def load_classification_data(datadir=DATADIR, metallicity="all"):
             del double_compact_objects[key]
     return double_compact_objects
 
-stars = load_classification_data_sample(fraction=0.1)
+stars = load_classification_data_sample(fraction=0.5)
 
 X = stars.copy()
 y = X.pop('Merges_Hubble_Time')
@@ -75,7 +75,7 @@ features_num = [
     "Kick_Magnitude_Random(2)", "Kick_Mean_Anomaly(1)",
     "Kick_Mean_Anomaly(2)", "Kick_Phi(1)", "Kick_Phi(2)", "Kick_Theta(1)",
     "Kick_Theta(2)", "Mass@ZAMS(1)",
-    "Mass@Zams(2)", "Metallicity@ZAMS(1)",
+    "Mass@ZAMS(2)", "Metallicity@ZAMS(1)",
     "SemiMajorAxis@ZAMS",
 ]
 
@@ -102,7 +102,10 @@ model = keras.Sequential([
     layers.Dense(256,activation = 'relu'),
     layers.BatchNormalization(),
     layers.Dropout(0.3),
-    layers.Dense(128, activation='relu'),
+    layers.Dense(256, activation='relu'),
+    layers.BatchNormalization(),
+    layers.Dropout(0.3),
+    layers.Dense(128, activation='gelu'),
     layers.BatchNormalization(),
     layers.Dropout(0.3),
     layers.Dense(1,activation = 'sigmoid'),
@@ -125,7 +128,7 @@ history = model.fit(
     epochs=150,
     callbacks=[early_stopping],
 )
-test_results = model.evaluate(X_valid, y_test)
+test_results = model.evaluate(X_valid, y_valid)
 print(f"Test Loss: {test_results[0]}, Test Accuracy: {test_results[1]}")
 
 history_df = pd.DataFrame(history.history)
