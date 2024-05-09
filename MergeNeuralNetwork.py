@@ -181,6 +181,13 @@ print("Confusion Matrix:")
 print(cm)
 print(f"Balanced Accuracy: {balanced_acc:.4f}")
 
+first_layer_weights = model.layers[0].get_weights()[0]
+
+# Print the feature weights
+print("Feature Weights:")
+for feature, weight in zip(features_num, first_layer_weights):
+    print(f"{feature}: {weight:.4f}")
+
 history_df = pd.DataFrame(history.history)
 history_df.loc[:, ['loss', 'val_loss']].plot(title="Cross-entropy")
 history_df.loc[:, ['binary_accuracy', 'val_binary_accuracy']].plot(title="Accuracy")
