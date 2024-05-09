@@ -105,7 +105,7 @@ model = keras.Sequential([
     layers.Dense(256, activation='relu'),
     layers.BatchNormalization(),
     layers.Dropout(0.3),
-    layers.Dense(128, activation='gelu'),
+    layers.Dense(128, activation='relu'),
     layers.BatchNormalization(),
     layers.Dropout(0.3),
     layers.Dense(1,activation = 'sigmoid'),
