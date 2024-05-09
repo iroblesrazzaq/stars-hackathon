@@ -9,6 +9,7 @@ from sklearn.compose import make_column_transformer
 from tensorflow import keras
 from tensorflow.keras import layers
 from pathlib import Path
+import numpy as np
 
 DATADIR = Path("/project/dfreedman/colmt/UChicago-AI-in-Science-Hackathon/stellar-paleontology-data/")
 
