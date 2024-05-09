@@ -1,4 +1,5 @@
 from pathlib import Path
+import numpy as np
 import pickle
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -138,7 +139,7 @@ model = keras.Sequential([
     layers.Dense(256, activation='relu'),
     layers.BatchNormalization(),
     layers.Dropout(0.3),
-    layers.Dense(128, activation='relu'),
+    layers.Dense(256, activation='relu'),
     layers.BatchNormalization(),
     layers.Dropout(0.3),
     layers.Dense(1,activation = 'sigmoid'),
@@ -163,6 +164,21 @@ history = model.fit(
 )
 test_results = model.evaluate(X_valid, y_valid)
 print(f"Test Loss: {test_results[0]}, Test Accuracy: {test_results[1]}")
+
+y_pred_prob = model.predict(X_valid)
+
+# Convert the probabilities to predicted classes (0 or 1)
+y_pred = (y_pred_prob > 0.5).astype(int)
+
+# Calculate the confusion matrix
+cm = confusion_matrix(y_valid, y_pred)
+
+# Calculate the balanced accuracy
+balanced_acc = statistics(cm)
+
+print("Confusion Matrix:")
+print(cm)
+print(f"Balanced Accuracy: {balanced_acc:.4f}")
 
 history_df = pd.DataFrame(history.history)
 history_df.loc[:, ['loss', 'val_loss']].plot(title="Cross-entropy")
